@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <h3>💼 HR Interview</h3>
+    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
+</div>
+<div class="page-content">
+<div class="test-container" style="max-width: 900px;">
+
+    <div class="test-header">
+        <h2>💼 HR Interview Simulation</h2>
+        <p>{{ questions|length }} Questions &nbsp;|&nbsp; Role: {{ role }} &nbsp;|&nbsp; Speak clearly to answer</p>
+    </div>
+
+    <div class="timer-bar">
+        <span>⏱️ Time Left:</span>
+        <span id="timer" class="timer-count">{{ time_limit }}</span>
+        <span>seconds</span>
+    </div>
+
+    <!-- Active Question UI -->
+    <div id="interview-ui">
+        <div class="question-meta" style="margin-bottom: 10px; text-align: center;">
+            <span class="q-number" id="q-counter">Question 1/{{ questions|length }}</span>
+            <span class="q-topic" id="q-badge" style="background: #2b6cb0;">💼 HR Round</span>
+        </div>
+
+        <h3 class="question-text" id="active-question-text" style="font-size: 24px; text-align: center; margin: 20px 0;"></h3>
+
+        <!-- Microphone Controls -->
+        <div style="text-align: center; margin: 24px 0;">
+            <button type="button" id="btn-mic" class="btn-submit" style="background: #48bb78; border-radius: 50px; padding: 14px 30px; font-size: 16px;" onclick="toggleMicrophone()">
+                🎤 Start Speaking
+            </button>
+            <p id="mic-status" style="font-size: 13px; color: #a0aec0; margin-top: 10px;">Click to speak. You can also type manually.</p>
+        </div>
+
+        <div class="question-card">
+            <h3 class="question-text" style="font-size: 14px; color: #a0aec0;">Your Answer:</h3>
+            <textarea
+                id="answer-box"
+                class="answer-box"
+                placeholder="Start speaking or type your answer here..."
+                rows="6"
+                style="font-size: 15px; line-height: 1.6;"
+            ></textarea>
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <button type="button" class="btn-submit" id="submitBtn" onclick="submitAnswer()">
+                Submit Answer ✅
+            </button>
+            <p id="loading-text" style="display: none; color: #48bb78; margin-top: 10px;">🤖 AI is processing your answer...</p>
+        </div>
+    </div>
+
+    <form action="/submit-interview" method="POST" id="interviewForm">
+        <input type="hidden" name="interview_data" id="interview_data">
+    </form>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+    const questions = {{ questions | tojson | safe }};
+    const timeLimit = parseInt("{{ time_limit }}") || 90;
+    const role = "{{ role }}";
+    
+    let currentIdx = 0;
+    let inFollowUp = false;
+    let timeLeft = timeLimit;
+    let timerInterval;
+    let interviewData = [];
+    
+    // Speech Recognition
+    let recognition;
+    let isRecording = false;
+    let finalTranscript = '';
+    
+    const timerEl = document.getElementById('timer');
+    const qCounter = document.getElementById('q-counter');
+    const qBadge = document.getElementById('q-badge');
+    const qText = document.getElementById('active-question-text');
+    const answerBox = document.getElementById('answer-box');
+    const btnMic = document.getElementById('btn-mic');
+    const micStatus = document.getElementById('mic-status');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingText = document.getElementById('loading-text');
+
+    function initSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-IN'; 
+
+            recognition.onstart = function() {
+                isRecording = true;
+                btnMic.innerHTML = '🛑 Stop Speaking';
+                btnMic.style.background = '#fc8181';
+                micStatus.textContent = "Listening... Speak clearly.";
+                micStatus.style.color = "#48bb78";
+            };
+
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                answerBox.value = finalTranscript + interimTranscript;
+            };
+
+            recognition.onerror = function(event) {
+                micStatus.textContent = "Microphone error. Please type manually.";
+                micStatus.style.color = "red";
+                stopMicrophone();
+            };
+
+            recognition.onend = function() {
+                if(isRecording) recognition.start();
+                else {
+                    btnMic.innerHTML = '🎤 Start Speaking';
+                    btnMic.style.background = '#48bb78';
+                    micStatus.textContent = "Click to speak. You can also type manually.";
+                    micStatus.style.color = "#a0aec0";
+                }
+            };
+        } else {
+            micStatus.textContent = "Browser doesn't support Speech Recognition. Please type manually.";
+            micStatus.style.display = "block";
+            btnMic.style.display = "none";
+        }
+    }
+
+    function toggleMicrophone() {
+        if (!recognition) return;
+        if (isRecording) {
+            stopMicrophone();
+        } else {
+            finalTranscript = answerBox.value.trim() ? answerBox.value.trim() + " " : ""; 
+            try { recognition.start(); } catch(e) { console.log(e); }
+        }
+    }
+
+    function stopMicrophone() {
+        isRecording = false;
+        if(recognition) recognition.stop();
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerEl.style.color = '';
+        timeLeft = timeLimit;
+        timerEl.textContent = timeLeft;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 15) timerEl.style.color = 'red';
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswer();
+            }
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        qCounter.textContent = `Question ${currentIdx + 1}/${questions.length}`;
+        qBadge.textContent = "💼 HR Round";
+        qBadge.style.background = "#2b6cb0";
+        qText.textContent = questions[currentIdx];
+        answerBox.value = "";
+        finalTranscript = "";
+        inFollowUp = false;
+        startTimer();
+    }
+
+    function loadFollowUp(q) {
+        qBadge.textContent = "🤖 AI Follow-up";
+        qBadge.style.background = "#48bb78";
+        qText.textContent = q;
+        answerBox.value = "";
+        finalTranscript = "";
+        inFollowUp = true;
+        startTimer();
+    }
+
+    function submitAnswer() {
+        stopMicrophone();
+        const answer = answerBox.value.trim() || "No answer provided.";
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        answerBox.disabled = true;
+
+        if (inFollowUp) {
+            interviewData[currentIdx].follow_up_answer = answer;
+            finishCurrentQuestion();
+        } else {
+            interviewData.push({ question: questions[currentIdx], answer: answer });
+            
+            loadingText.style.display = 'block';
+            submitBtn.style.display = 'none';
+            clearInterval(timerInterval);
+
+            fetch('/api/hr-followup', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ role: role, question: questions[currentIdx], answer: answer })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loadingText.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                answerBox.disabled = false;
+                
+                if (data.followup) {
+                    loadFollowUp(data.followup);
+                } else {
+                    finishCurrentQuestion();
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                finishCurrentQuestion();
+            });
+        }
+    }
+
+    function finishCurrentQuestion() {
+        currentIdx++;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        answerBox.disabled = false;
+        loadingText.style.display = 'none';
+        submitBtn.style.display = 'inline-block';
+
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('interview_data').value = JSON.stringify(interviewData);
+            document.getElementById('interviewForm').submit();
+        }
+    }
+
+    window.onload = () => {
+        initSpeechRecognition();
+        loadQuestion();
+    };
+</script>
+
+{% endblock %}

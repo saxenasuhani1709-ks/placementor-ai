@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <div style="display:flex; align-items:center; gap:14px;">
+        <button class="menu-btn" onclick="openSidebar()">☰</button>
+        <h3>💻 Technical Round</h3>
+    </div>
+    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
+</div>
+<div class="page-content">
+<div class="coding-container">
+
+    <div class="test-header">
+        <h2>💻 Technical Round</h2>
+        <p>Solve the following technical questions &nbsp;|&nbsp; {{ level }} Level &nbsp;|&nbsp; 10 minutes per problem</p>
+    </div>
+
+    <div class="timer-bar">
+        <span>⏱️ Time Left:</span>
+        <span id="timer" class="timer-count">600</span>
+        <span>seconds</span>
+    </div>
+
+    <form action="/submit-coding" method="POST" id="codingForm">
+
+        {% for q in questions %}
+        <div class="coding-card" id="q-{{ loop.index }}"
+             style="display: {{ 'block' if loop.index == 1 else 'none' }}">
+
+            <div class="question-meta">
+                <span class="q-number">Problem {{ loop.index }}/{{ questions|length }}</span>
+                <span class="q-topic">💻 {{ q.topic }}</span>
+            </div>
+
+            <h3 class="question-text">{{ q.question }}</h3>
+
+            <div class="example-box">
+                <div class="example-row">
+                    <span class="example-label">Input:</span>
+                    <code>{{ q.example_input }}</code>
+                </div>
+                <div class="example-row">
+                    <span class="example-label">Output:</span>
+                    <code>{{ q.example_output }}</code>
+                </div>
+                <div class="example-row">
+                    <span class="example-label">💡 Hint:</span>
+                    <span class="hint-text">{{ q.hint }}</span>
+                </div>
+            </div>
+
+            <div class="lang-select-group">
+                <label>Select Language:</label>
+                <select name="lang_{{ q.id }}" class="lang-select">
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                </select>
+            </div>
+
+            <textarea
+                name="code_{{ q.id }}"
+                class="code-editor"
+                placeholder="Write your code here..."
+                rows="12"
+                spellcheck="false"
+            ></textarea>
+
+        </div>
+        {% endfor %}
+
+        <div class="test-nav">
+            <button type="button" class="btn-nav" onclick="prevQuestion()">← Prev</button>
+            <span id="progress-text">1 / {{ questions|length }}</span>
+            <button type="button" class="btn-nav" onclick="nextQuestion()">Next →</button>
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <button type="submit" class="btn-submit" id="submitBtn" style="display:none;">
+                Submit Technical Round ✅
+            </button>
+        </div>
+
+    </form>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+    let current  = 1;
+    const total  = {{ questions|length }};
+    let timeLeft = 600;
+
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = timeLeft;
+        if (timeLeft <= 60) {
+            document.getElementById('timer').style.color = 'red';
+        }
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('codingForm').submit();
+        }
+    }, 1000);
+
+    function showQuestion(n) {
+        for (let i = 1; i <= total; i++) {
+            document.getElementById('q-' + i).style.display = 'none';
+        }
+        document.getElementById('q-' + n).style.display = 'block';
+        document.getElementById('progress-text').textContent = n + ' / ' + total;
+        document.getElementById('submitBtn').style.display = n === total ? 'block' : 'none';
+    }
+
+    function nextQuestion() {
+        if (current < total) { current++; showQuestion(current); }
+    }
+
+    function prevQuestion() {
+        if (current > 1) { current--; showQuestion(current); }
+    }
+</script>
+
+{% endblock %}

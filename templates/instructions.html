@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+    {% include 'sidebar.html' with context %}
+
+    <div class="main-content">
+        <div class="topbar">
+            <h3>{{ title }}</h3>
+            <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Back to Dashboard</a>
+        </div>
+
+        <div class="page-content">
+            <div class="instructions-container">
+
+                <div class="inst-header">
+                    <div class="inst-icon">{{ icon }}</div>
+                    <h2>{{ title }}</h2>
+                    <p>{{ subtitle }}</p>
+                </div>
+
+                <div class="inst-info-grid">
+                    <div class="inst-info-card">
+                        <span class="inst-info-label">📝 Questions</span>
+                        <span class="inst-info-value">{{ questions }}</span>
+                    </div>
+                    <div class="inst-info-card">
+                        <span class="inst-info-label">⏱️ Time</span>
+                        <span class="inst-info-value">{{ time }}</span>
+                    </div>
+                    <div class="inst-info-card">
+                        <span class="inst-info-label">🏆 Passing Score</span>
+                        <span class="inst-info-value">{{ passing }}</span>
+                    </div>
+                    <div class="inst-info-card">
+                        <span class="inst-info-label">📊 Level</span>
+                        <span class="inst-info-value">{{ level }}</span>
+                    </div>
+                </div>
+
+                <div class="inst-rules">
+                    <h3>📋 Rules & Instructions</h3>
+                    <ul>
+                        {% for rule in rules %}
+                        <li>{{ rule }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div style="text-align:center;">
+                    <a href="{{ start_url }}" class="btn-start">Start {{ title }} →</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

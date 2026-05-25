@@ -1,0 +1,30 @@
+<aside class="sidebar" id="appSidebar">
+    <div class="sidebar-logo">
+        <h2 class="sidebar-brand"><span id="sidebarToggle" class="sidebar-icon" title="Toggle Sidebar">🎯</span> <span class="brand-text">PlacementPrep</span></h2>
+        <p class="sidebar-tagline">AI Placement System</p>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="user-avatar">{{ session['username'][0] }}</div>
+        <div class="user-info">
+            <p>{{ session['username'] }}</p>
+            <span>{{ target_role if target_role else 'Placement Prep' }}</span>
+        </div>
+    </div>
+
+    <nav class="nav-section">
+        <div class="nav-label">Main</div>
+        <a href="/dashboard" class="nav-item {% if active == 'dashboard' %}active{% endif %}" title="Dashboard">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Dashboard</span>
+        </a>
+        <a href="/profile" class="nav-item {% if active == 'profile' %}active{% endif %}" title="My Profile">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">My Profile</span>
+        </a>`
+        <a href="/logout" class="nav-item" title="Logout">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-text">Logout</span>
+        </a>
+    </nav>
+</aside>

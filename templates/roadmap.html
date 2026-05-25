@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <h3>🗺️ Career Roadmap</h3>
+</div>
+<div class="page-content">
+<div class="roadmap-container">
+    <div class="roadmap-form-card" style="text-align: center; padding: 40px;">
+        <h2 style="color: #e2e8f0; margin-bottom: 20px; font-size: 24px;">Select Your Target Role</h2>
+        <p style="color: #a0aec0; margin-bottom: 30px; font-size: 15px;">Choose a role below to view its comprehensive learning roadmap.</p>
+        
+        <div class="form-group" style="max-width: 400px; margin: 0 auto; text-align: left;">
+            <select id="role-select" class="roadmap-input" style="cursor: pointer; padding: 14px; font-size: 16px; width: 100%; border-radius: 10px;" onchange="if(this.value) { window.open(this.value, '_blank'); this.selectedIndex = 0; }">
+                <option value="" disabled selected>-- Choose a Role --</option>
+                <option value="https://roadmap.sh/data-analyst">Data Analyst</option>
+                <option value="https://roadmap.sh/frontend">Frontend Developer</option>
+                <option value="https://roadmap.sh/backend">Backend Developer</option>
+                <option value="https://roadmap.sh/full-stack">Full Stack Developer</option>
+                <option value="https://roadmap.sh/python">Python Developer</option>
+                <option value="https://roadmap.sh/ai-data-scientist">AI/ML Engineer</option>
+                <option value="https://roadmap.sh/devops">DevOps</option>
+                <option value="https://roadmap.sh/mlops">Machine Learning</option>
+                <option value="https://roadmap.sh/ai-engineer">AI Engineer</option>
+                <option value="https://roadmap.sh/cyber-security">Cyber Security</option>
+                <option value="https://roadmap.sh/data-scientist">AI and Data Scientist</option>
+            </select>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

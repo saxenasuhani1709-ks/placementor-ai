@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Navbar -->
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <h3>🧮 Aptitude Test</h3>
+    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
+</div>
+<div class="page-content">
+<div class="test-container">
+
+    <!-- Header -->
+    <div class="test-header">
+        <h2>🧮 Aptitude Test</h2>
+        <p>10 Questions &nbsp;|&nbsp; {{ level }} Level &nbsp;|&nbsp; 60 seconds per question</p>
+    </div>
+
+    <!-- Timer Bar -->
+    <div class="timer-bar">
+        <span>⏱️ Time Left:</span>
+        <span id="timer" class="timer-count">60</span>
+        <span>seconds</span>
+    </div>
+
+    <!-- Test Form -->
+    <form action="/submit-aptitude" method="POST" id="testForm">
+
+        {% for q in questions %}
+        <div class="question-card" id="q-{{ loop.index }}" 
+             style="display: {{ 'block' if loop.index == 1 else 'none' }}">
+
+            <!-- Question Number & Topic -->
+            <div class="question-meta">
+                <span class="q-number">Question {{ loop.index }}/{{ questions|length }}</span>
+                <span class="q-topic">📌 {{ q.topic }}</span>
+            </div>
+
+            <!-- Question Text -->
+            <h3 class="question-text">{{ q.question }}</h3>
+
+            <!-- Options -->
+            <div class="options-grid">
+                {% for option in q.options %}
+                <label class="option-label">
+                    <input type="radio" 
+                           name="answer_{{ q.id }}" 
+                           value="{{ option }}">
+                    <span>{{ option }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+        <!-- Navigation Buttons -->
+        <div class="test-nav">
+            <button type="button" class="btn-nav" onclick="prevQuestion()">← Prev</button>
+            <span id="progress-text">1 / {{ questions|length }}</span>
+            <button type="button" class="btn-nav" onclick="nextQuestion()">Next →</button>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="text-align:center; margin-top: 20px;">
+            <button type="submit" class="btn-submit" id="submitBtn" style="display:none;">
+                Submit Test ✅
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- JavaScript -->
+<script>
+    let current     = 1;
+    const total     = {{ questions|length }};
+    let timeLeft    = 60;
+    let timerInterval;
+
+    // ---- Timer ----
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = timeLeft;
+
+            if (timeLeft <= 10) {
+                document.getElementById('timer').style.color = 'red';
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                // Auto next question jab time khatam ho
+                if (current < total) {
+                    nextQuestion();
+                } else {
+                    document.getElementById('testForm').submit();
+                }
+            }
+        }, 1000);
+    }
+
+    // ---- Show Question ----
+    function showQuestion(n) {
+        // Sab hide karo
+        for (let i = 1; i <= total; i++) {
+            document.getElementById('q-' + i).style.display = 'none';
+        }
+        // Current dikhao
+        document.getElementById('q-' + n).style.display = 'block';
+        document.getElementById('progress-text').textContent = n + ' / ' + total;
+
+        // Last question pe submit dikhao
+        if (n === total) {
+            document.getElementById('submitBtn').style.display = 'block';
+        } else {
+            document.getElementById('submitBtn').style.display = 'none';
+        }
+    }
+
+    // ---- Next ----
+    function nextQuestion() {
+        if (current < total) {
+            current++;
+            showQuestion(current);
+            // Timer reset
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            document.getElementById('timer').style.color = '';
+            startTimer();
+        }
+    }
+
+    // ---- Prev ----
+    function prevQuestion() {
+        if (current > 1) {
+            current--;
+            showQuestion(current);
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            document.getElementById('timer').style.color = '';
+            startTimer();
+        }
+    }
+
+    // Page load hote hi timer start
+    startTimer();
+</script>
+</div></div></div>
+
+{% endblock %}

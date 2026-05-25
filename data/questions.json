@@ -1,0 +1,258 @@
+[
+  {
+    "id": 1,
+    "question": "A train travels 60 km in 1 hour. How long will it take to travel 180 km?",
+    "options": ["2 hours", "3 hours", "4 hours", "5 hours"],
+    "answer": "3 hours",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Speed & Distance"
+  },
+  {
+    "id": 2,
+    "question": "If 6 workers can complete a job in 12 days, how many days will 9 workers take?",
+    "options": ["6 days", "8 days", "10 days", "12 days"],
+    "answer": "8 days",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Work & Time"
+  },
+  {
+    "id": 3,
+    "question": "What is 15% of 200?",
+    "options": ["25", "30", "35", "40"],
+    "answer": "30",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Percentage"
+  },
+  {
+    "id": 4,
+    "question": "A shopkeeper buys an item for Rs.400 and sells it for Rs.500. What is the profit %?",
+    "options": ["20%", "25%", "30%", "15%"],
+    "answer": "25%",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Profit & Loss"
+  },
+  {
+    "id": 5,
+    "question": "Find the next number in series: 2, 6, 12, 20, 30, ?",
+    "options": ["40", "42", "44", "46"],
+    "answer": "42",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Number Series"
+  },
+  {
+    "id": 6,
+    "question": "If APPLE = 50, then MANGO = ?",
+    "options": ["50", "55", "60", "65"],
+    "answer": "50",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Coding"
+  },
+  {
+    "id": 7,
+    "question": "Simple interest on Rs.1000 at 10% per year for 2 years?",
+    "options": ["Rs.100", "Rs.150", "Rs.200", "Rs.250"],
+    "answer": "Rs.200",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Simple Interest"
+  },
+  {
+    "id": 8,
+    "question": "A is 2 years older than B. B is 3 years younger than C. If C is 20, how old is A?",
+    "options": ["17", "18", "19", "20"],
+    "answer": "19",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Ages"
+  },
+  {
+    "id": 9,
+    "question": "What comes next: 1, 4, 9, 16, 25, ?",
+    "options": ["30", "35", "36", "40"],
+    "answer": "36",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Number Series"
+  },
+  {
+    "id": 10,
+    "question": "If a rectangle has length 8cm and width 5cm, what is its area?",
+    "options": ["30 cm²", "35 cm²", "40 cm²", "45 cm²"],
+    "answer": "40 cm²",
+    "type": "aptitude",
+    "level": "beginner",
+    "topic": "Mensuration"
+  }
+  ,
+  {
+    "id": 11,
+    "question": "Write a function to check if a number is palindrome. Example: 121 is palindrome, 123 is not.",
+    "example_input": "121",
+    "example_output": "True",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "beginner",
+    "topic": "Strings/Numbers",
+    "hint": "Convert number to string and compare with its reverse"
+  },
+  {
+    "id": 12,
+    "question": "Write a function to find the largest element in a list. Example: [3, 1, 4, 1, 5, 9, 2, 6] → 9",
+    "example_input": "[3, 1, 4, 1, 5, 9, 2, 6]",
+    "example_output": "9",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "beginner",
+    "topic": "Arrays",
+    "hint": "Loop through list and keep track of maximum"
+  },
+  {
+    "id": 13,
+    "question": "Write a function to count vowels in a string. Example: 'hello world' → 3",
+    "example_input": "hello world",
+    "example_output": "3",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "beginner",
+    "topic": "Strings",
+    "hint": "Check each character if it is in [a, e, i, o, u]"
+  },
+  {
+    "id": 14,
+    "question": "Write a function to reverse a string. Example: 'placement' → 'tnemecalp'",
+    "example_input": "placement",
+    "example_output": "tnemecalp",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "beginner",
+    "topic": "Strings",
+    "hint": "Use slicing or loop"
+  },
+  {
+    "id": 15,
+    "question": "Write a function to check if two strings are anagrams. Example: 'listen' and 'silent' → True",
+    "example_input": "listen, silent",
+    "example_output": "True",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "beginner",
+    "topic": "Strings",
+    "hint": "Sort both strings and compare"
+  },
+  {
+    "id": 101,
+    "question": "A boat goes 12 km upstream in 3 hours and 12 km downstream in 2 hours. What is the speed of the stream?",
+    "options": ["1 km/h", "2 km/h", "3 km/h", "4 km/h"],
+    "answer": "2 km/h",
+    "type": "aptitude",
+    "level": "intermediate",
+    "topic": "Boats & Streams"
+  },
+  {
+    "id": 102,
+    "question": "The average of 5 numbers is 20. If one number is removed, the average becomes 18. What is the removed number?",
+    "options": ["26", "28", "30", "32"],
+    "answer": "28",
+    "type": "aptitude",
+    "level": "intermediate",
+    "topic": "Average"
+  },
+  {
+    "id": 103,
+    "question": "In how many ways can 4 people be seated in a row?",
+    "options": ["12", "16", "24", "32"],
+    "answer": "24",
+    "type": "aptitude",
+    "level": "intermediate",
+    "topic": "Permutation"
+  },
+  {
+    "id": 104,
+    "question": "If sin A = 3/5, what is cos A (A is acute)?",
+    "options": ["4/5", "3/4", "5/4", "2/5"],
+    "answer": "4/5",
+    "type": "aptitude",
+    "level": "intermediate",
+    "topic": "Trigonometry"
+  },
+  {
+    "id": 105,
+    "question": "A sum doubles in 5 years at simple interest. In how many years will it triple?",
+    "options": ["7.5", "10", "12.5", "15"],
+    "answer": "10",
+    "type": "aptitude",
+    "level": "intermediate",
+    "topic": "Simple Interest"
+  },
+  {
+    "id": 111,
+    "question": "Given an array, find the second largest element. Example: [10, 5, 20, 8] → 10",
+    "example_input": "[10, 5, 20, 8]",
+    "example_output": "10",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "intermediate",
+    "topic": "Arrays",
+    "hint": "Track largest and second largest while scanning"
+  },
+  {
+    "id": 112,
+    "question": "Check if a string has all unique characters. Example: 'python' → True, 'hello' → False",
+    "example_input": "hello",
+    "example_output": "False",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "intermediate",
+    "topic": "Strings",
+    "hint": "Use a set to detect duplicates"
+  },
+  {
+    "id": 113,
+    "question": "Count frequency of each character in a string. Example: 'aabbc' → {'a':2,'b':2,'c':1}",
+    "example_input": "aabbc",
+    "example_output": "{'a': 2, 'b': 2, 'c': 1}",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "intermediate",
+    "topic": "Hash Map",
+    "hint": "Use dictionary or Counter"
+  },
+  {
+    "id": 114,
+    "question": "Find GCD of two numbers. Example: 12 and 18 → 6",
+    "example_input": "12, 18",
+    "example_output": "6",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "intermediate",
+    "topic": "Math",
+    "hint": "Euclidean algorithm"
+  },
+  {
+    "id": 115,
+    "question": "Merge two sorted arrays into one sorted array. Example: [1,3,5] and [2,4,6] → [1,2,3,4,5,6]",
+    "example_input": "[1,3,5], [2,4,6]",
+    "example_output": "[1,2,3,4,5,6]",
+    "options": [],
+    "answer": "",
+    "type": "coding",
+    "level": "intermediate",
+    "topic": "Two Pointers",
+    "hint": "Use two indices and compare elements"
+  }
+]

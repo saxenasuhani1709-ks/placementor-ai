@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <div style="display:flex; align-items:center; gap:14px;">
+        <button class="menu-btn" onclick="openSidebar()">☰</button>
+        <h3>💻 Technical Result</h3>
+    </div>
+    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
+</div>
+<div class="page-content">
+<div class="result-container">
+
+    <div class="score-card">
+        <h2>Technical Round Complete! 💻</h2>
+        <div class="big-score">{{ correct }}/{{ total }}</div>
+        <div class="percentage {{ 'pass' if percentage >= 60 else 'fail' }}">
+            {{ percentage }}%
+            {{ '— Pass ✅' if percentage >= 60 else '— Needs Practice ❌' }}
+        </div>
+        <a href="/dashboard" class="btn-home">Go to Dashboard</a>
+    </div>
+
+    <h3 class="section-title" style="margin-top:28px; color:#4a5568;">🤖 AI Code Review</h3>
+
+    {% for r in results %}
+    <div class="ai-card">
+        <p class="review-q">Problem {{ loop.index }}: {{ r.question }}</p>
+        <div class="code-display">
+            <span class="code-label">Your Code ({{ r.language }}):</span>
+            <pre>{{ r.code }}</pre>
+        </div>
+        <div class="ai-feedback-grid" style="margin-top:12px;">
+            <div class="feedback-box score-box">
+                <span class="fb-label">Score</span>
+                <span class="fb-value">{{ r.score }}/10</span>
+            </div>
+            <div class="feedback-box strength-box">
+                <span class="fb-label">✅ Correct Approach</span>
+                <span class="fb-value">{{ r.correct_approach }}</span>
+            </div>
+            <div class="feedback-box weakness-box">
+                <span class="fb-label">❌ Issues Found</span>
+                <span class="fb-value">{{ r.issues }}</span>
+            </div>
+            <div class="feedback-box tip-box">
+                <span class="fb-label">💡 Better Approach</span>
+                <span class="fb-value">{{ r.better_approach }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

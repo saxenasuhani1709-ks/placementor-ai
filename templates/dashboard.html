@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+    {% set active = 'dashboard' %}
+    {% include 'sidebar.html' with context %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <h3>Dashboard</h3>
+            <span class="topbar-badge">🔥 {{ level }}</span>
+        </div>
+
+        <div class="page-content">
+
+            <!-- Welcome -->
+            <div class="welcome-banner">
+                <h2>Welcome back, {{ username }}! 👋</h2>
+                <p>Ready to practice today? Keep going!</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Tests Taken</p>
+                    <h3 class="stat-number">{{ stats.total_tests }}</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Avg Score</p>
+                    <h3 class="stat-number">{{ stats.avg_score }}%</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Target Role</p>
+                    <h3 class="stat-number" style="font-size:15px; margin-top:4px;">{{ target_role }}</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Level</p>
+                    <h3 class="stat-number" style="font-size:15px; margin-top:4px;">{{ level }}</h3>
+                </div>
+            </div>
+
+            <!-- Menu Cards -->
+            <p class="section-title">What do you want to practice?</p>
+
+            <div class="menu-grid">
+                <a href="/instructions/aptitude" class="menu-card">
+                    <div class="menu-icon">🧮</div>
+                    <h4>Aptitude Test</h4>
+                    <p>MCQ based timed test</p>
+                    <span class="menu-badge">10 Questions</span>
+                </a>
+                <a href="/instructions/coding" class="menu-card">
+                    <div class="menu-icon">💻</div>
+                    <h4>Technical Round</h4>
+                    <p>Solve technical problems</p>
+                    <span class="menu-badge">5 Problems</span>
+                </a>
+                <a href="/instructions/interview" class="menu-card">
+                    <div class="menu-icon">💼</div>
+                    <h4>HR Interview</h4>
+                    <p>AI evaluated answers</p>
+                    <span class="menu-badge">5 Questions</span>
+                </a>
+                <a href="/instructions/gd" class="menu-card">
+                    <div class="menu-icon">🗣️</div>
+                    <h4>GD Round</h4>
+                    <p>Group discussion practice</p>
+                    <span class="menu-badge">1 Topic</span>
+                </a>
+                <a href="/roadmap" class="menu-card">
+                    <div class="menu-icon">🗺️</div>
+                    <h4>Career Roadmap</h4>
+                    <p>Get your preparation plan</p>
+                    <span class="menu-badge">AI Generated</span>
+                </a>
+                <a href="/progress" class="menu-card">
+                    <div class="menu-icon">📊</div>
+                    <h4>My Progress</h4>
+                    <p>Track your performance</p>
+                    <span class="menu-badge">View Stats</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

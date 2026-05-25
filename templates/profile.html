@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <h3>👤 My Profile</h3>
+</div>
+<div class="page-content">
+<div class="progress-container" style="max-width:640px;">
+
+    {% if success %}
+    <div class="error-box" style="border-color:#22c55e; color:#86efac; margin-bottom:18px;">
+        Profile updated successfully.
+    </div>
+    {% endif %}
+
+    <div class="progress-card" style="margin-bottom:18px;">
+        <h4>Account</h4>
+        <div class="stats-grid" style="margin-top:14px;">
+            <div class="stat-card">
+                <p class="stat-label">Tests Taken</p>
+                <h3 class="stat-number">{{ stats.total_tests }}</h3>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Avg Score</p>
+                <h3 class="stat-number">{{ stats.avg_score }}%</h3>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Level</p>
+                <h3 class="stat-number" style="font-size:15px; margin-top:4px;">{{ stats.level }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-card">
+        <h4>Edit profile</h4>
+        <form action="/profile" method="POST" style="margin-top:16px;">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" value="{{ user.username }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" value="{{ user.email }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Target Role</label>
+                <select name="target_role">
+                    <option value="">-- Select Role --</option>
+                    {% for role in roles %}
+                    <option value="{{ role }}" {% if user.target_role == role %}selected{% endif %}>{{ role }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <p style="color:#4a5568; font-size:12px; margin-bottom:14px;">
+                Changing your role clears any in-progress test questions so new ones match your goal.
+            </p>
+            <button type="submit" class="btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

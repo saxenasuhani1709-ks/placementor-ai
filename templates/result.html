@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <h3>📊 Test Result</h3>
+    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
+</div>
+<div class="page-content">
+<div class="result-container">
+
+    <div class="score-card">
+        <h2>Test Complete! 🎉</h2>
+        <div class="big-score">{{ score }}/{{ total }}</div>
+        <div class="percentage {{ 'pass' if percentage >= 60 else 'fail' }}">
+            {{ percentage }}%
+            {{ '— Pass ✅' if percentage >= 60 else '— Try Again ❌' }}
+        </div>
+        {% if percentage >= 60 %}
+        <div class="unlock-badge">🎉 Intermediate Level Unlocked!</div>
+        {% else %}
+        <div class="unlock-badge fail">📚 Score 60%+ to unlock Intermediate!</div>
+        {% endif %}
+        <a href="/dashboard" class="btn-home">Go to Dashboard</a>
+    </div>
+
+    <h3 class="section-title" style="margin-top:28px; color:#4a5568;">📋 Question Review</h3>
+
+    {% for r in results %}
+    <div class="review-card {{ 'correct' if r.is_correct else 'wrong' }}">
+        <p class="review-q">Q. {{ r.question }}</p>
+        <p>Your Answer: <strong style="color:#e2e8f0;">{{ r.user_answer }}</strong></p>
+        <p>Correct Answer: <strong style="color:#48bb78;">{{ r.correct }}</strong></p>
+        <span class="review-badge" style="color:{{ '#48bb78' if r.is_correct else '#fc8181' }}">
+            {{ '✅ Correct' if r.is_correct else '❌ Wrong' }}
+        </span>
+    </div>
+    {% endfor %}
+
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

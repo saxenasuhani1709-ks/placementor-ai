@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+
+{% include 'sidebar.html' with context %}
+
+<div class="main-content">
+<div class="topbar">
+    <h3>📊 My Progress</h3>
+</div>
+<div class="page-content">
+<div class="progress-container">
+
+    <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card">
+            <p class="stat-label">Total Tests</p>
+            <h3 class="stat-number">{{ stats.total_tests }}</h3>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Avg Score</p>
+            <h3 class="stat-number">{{ stats.avg_score }}%</h3>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Best Score</p>
+            <h3 class="stat-number">{{ stats.best_score }}%</h3>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Level</p>
+            <h3 class="stat-number" style="font-size:15px; margin-top:4px;">{{ stats.level }}</h3>
+        </div>
+    </div>
+
+    <div class="progress-card">
+        <h4>📈 Score Trend</h4>
+        {% if attempts %}
+        <canvas id="scoreChart" height="100"></canvas>
+        {% else %}
+        <p class="no-data">No tests taken yet. Start practicing!</p>
+        {% endif %}
+    </div>
+
+    <div class="progress-card">
+        <h4>🎯 Round wise Performance</h4>
+        <div class="round-grid">
+            <div class="round-card">
+                <span class="round-icon">🧮</span>
+                <h5>Aptitude</h5>
+                <p>{{ roundwise.aptitude.count }} tests</p>
+                <p class="round-score">Avg: {{ roundwise.aptitude.avg }}%</p>
+            </div>
+            <div class="round-card">
+                <span class="round-icon">💼</span>
+                <h5>HR Interview</h5>
+                <p>{{ roundwise.hr.count }} tests</p>
+                <p class="round-score">Avg: {{ roundwise.hr.avg }}%</p>
+            </div>
+            <div class="round-card">
+                <span class="round-icon">🗣️</span>
+                <h5>GD Round</h5>
+                <p>{{ roundwise.gd.count }} tests</p>
+                <p class="round-score">Avg: {{ roundwise.gd.avg }}%</p>
+            </div>
+            <div class="round-card">
+                <span class="round-icon">💻</span>
+                <h5>Technical</h5>
+                <p>{{ roundwise.coding.count }} tests</p>
+                <p class="round-score">Avg: {{ roundwise.coding.avg }}%</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-card">
+        <h4>🕐 Recent Attempts</h4>
+        {% if attempts %}
+        <table class="attempts-table">
+            <thead>
+                <tr>
+                    <th>Round</th>
+                    <th>Level</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in attempts %}
+                <tr>
+                    <td>{{ a.test_type | upper }}</td>
+                    <td>{{ a.level | capitalize }}</td>
+                    <td>{{ a.score }}/{{ a.total }}</td>
+                    <td>
+                        <span class="score-pill {{ 'pass' if (a.score/a.total*100) >= 60 else 'fail' }}">
+                            {{ (a.score/a.total*100) | round | int }}%
+                        </span>
+                    </td>
+                    <td>{{ a.attempted_at[:10] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">No attempts yet!</p>
+        {% endif %}
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+    {% if attempts %}
+    const labels = [{% for a in attempts %}"{{ a.test_type }}",{% endfor %}];
+    const scores = [{% for a in attempts %}{{ (a.score / a.total * 100) | round | int }},{% endfor %}];
+
+    new Chart(document.getElementById('scoreChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Score %',
+                data: scores,
+                borderColor: '#4f8ef7',
+                backgroundColor: 'rgba(79, 142, 247, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#4f8ef7',
+                pointRadius: 5,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#4a5568' }, grid: { color: '#1e2535' } },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: '#4a5568', callback: v => v + '%' },
+                    grid: { color: '#1e2535' }
+                }
+            }
+        }
+    });
+    {% endif %}
+</script>
+
+{% endblock %}
