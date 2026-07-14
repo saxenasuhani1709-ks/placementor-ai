@@ -1,63 +1,352 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .result-workspace {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+    .summary-card {
+        background: #161b26;
+        border: 1px solid #232d3f;
+        border-radius: 12px;
+        padding: 32px;
+        text-align: center;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .summary-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 12px;
+    }
+
+    .score-badge {
+        font-size: 54px;
+        font-weight: 900;
+        color: #60a5fa;
+        margin: 16px 0;
+    }
+
+    .verdict-badge {
+        font-size: 16px;
+        font-weight: 700;
+        padding: 6px 16px;
+        border-radius: 50px;
+        display: inline-block;
+        margin-bottom: 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .verdict-pass {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid #10b981;
+    }
+
+    .verdict-fail {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+    }
+
+    .btn-dashboard {
+        background: #3b82f6;
+        color: #ffffff;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-block;
+    }
+
+    .btn-dashboard:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    .review-section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .problem-review-card {
+        background: #121620;
+        border: 1px solid #232d3f;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .problem-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #1e2535;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+    }
+
+    .problem-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .test-cases-ratio {
+        font-size: 12.5px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 50px;
+        background: #1f293d;
+        color: #94a3b8;
+    }
+
+    .test-cases-ratio.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #34d399;
+    }
+
+    .code-box-wrapper {
+        background: #0b0e14;
+        border: 1px solid #1e2535;
+        border-radius: 8px;
+        padding: 16px;
+        font-family: 'Fira Code', monospace;
+        font-size: 13.5px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .code-box-header {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    .code-box-wrapper pre {
+        margin: 0;
+        color: #cbd5e1;
+        overflow-x: auto;
+    }
+
+    /* Test Case Details Table */
+    .tc-details-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tc-row {
+        display: flex;
+        flex-direction: column;
+        background: #161b26;
+        border: 1px solid #232d3f;
+        border-radius: 8px;
+        padding: 12px 16px;
+    }
+
+    .tc-row-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .tc-id {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .tc-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .tc-badge.pass { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .tc-badge.fail { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    .tc-io-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        font-family: monospace;
+        font-size: 12px;
+        background: #0b0e14;
+        padding: 8px 12px;
+        border-radius: 6px;
+    }
+
+    .tc-col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tc-label {
+        font-weight: 700;
+        color: #64748b;
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    .tc-val {
+        color: #cbd5e1;
+        white-space: pre-wrap;
+    }
+
+    /* AI Feedback Grid */
+    .feedback-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .feedback-item {
+        background: #161b26;
+        border: 1px solid #232d3f;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .feedback-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .feedback-val {
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: #cbd5e1;
+    }
+</style>
+
 <div class="app-layout">
 
-{% include 'sidebar.html' with context %}
+    {% include 'sidebar.html' with context %}
 
-<div class="main-content">
-<div class="topbar">
-    <div style="display:flex; align-items:center; gap:14px;">
-        <button class="menu-btn" onclick="openSidebar()">☰</button>
-        <h3>💻 Technical Result</h3>
-    </div>
-    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
-</div>
-<div class="page-content">
-<div class="result-container">
-
-    <div class="score-card">
-        <h2>Technical Round Complete! 💻</h2>
-        <div class="big-score">{{ correct }}/{{ total }}</div>
-        <div class="percentage {{ 'pass' if percentage >= 60 else 'fail' }}">
-            {{ percentage }}%
-            {{ '— Pass ✅' if percentage >= 60 else '— Needs Practice ❌' }}
+    <div class="main-content">
+        <div class="topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="menu-btn" onclick="openSidebar()">☰</button>
+                <h3>💻 Technical Results</h3>
+            </div>
+            <a href="/dashboard" style="color:#94a3b8; font-size:13px; text-decoration:none;">← Dashboard</a>
         </div>
-        <a href="/dashboard" class="btn-home">Go to Dashboard</a>
-    </div>
 
-    <h3 class="section-title" style="margin-top:28px; color:#4a5568;">🤖 AI Code Review</h3>
+        <div class="result-workspace">
+            <!-- Score Card Summary -->
+            <div class="summary-card">
+                <div class="summary-title">Technical Assessment Round Finished! 💻</div>
+                <p style="color: #94a3b8; font-size: 14.5px;">You have resolved all problem sets. Your code was run against hidden edge cases.</p>
+                
+                <div class="score-badge">{{ correct }} / {{ total }}</div>
+                
+                <div class="verdict-badge {{ 'verdict-pass' if percentage >= 60 else 'verdict-fail' }}">
+                    {{ percentage }}% Score {{ '— Passed ✅' if percentage >= 60 else '— Needs Practice ❌' }}
+                </div>
+                
+                <div>
+                    <a href="/dashboard" class="btn-dashboard"><i class="fa-solid fa-house"></i> Go to Dashboard</a>
+                </div>
+            </div>
 
-    {% for r in results %}
-    <div class="ai-card">
-        <p class="review-q">Problem {{ loop.index }}: {{ r.question }}</p>
-        <div class="code-display">
-            <span class="code-label">Your Code ({{ r.language }}):</span>
-            <pre>{{ r.code }}</pre>
+            <!-- Detailed per-problem review -->
+            <div class="review-section-title">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Detailed AI Review
+            </div>
+
+            {% for r in results %}
+            <div class="problem-review-card">
+                <div class="problem-header">
+                    <span class="problem-title">Problem {{ loop.index }}: {{ r.question.split('\n')[0] }}</span>
+                    <span class="test-cases-ratio {{ 'success' if r.passed_cases == r.total_cases }}">
+                        <i class="fa-solid fa-vial"></i> Test Cases: {{ r.passed_cases }}/{{ r.total_cases }} Passed
+                    </span>
+                </div>
+
+                <!-- Code submission display -->
+                <div class="code-box-wrapper">
+                    <div class="code-box-header">Submitted Code ({{ r.language | upper }})</div>
+                    <pre><code>{{ r.code }}</code></pre>
+                </div>
+
+                <!-- Test Case Results -->
+                <h4 style="font-size: 13px; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; font-weight: 700;">Test Case Breakdown:</h4>
+                <div class="tc-details-grid">
+                    {% for tc in r.tc_results %}
+                    <div class="tc-row">
+                        <div class="tc-row-header">
+                            <span class="tc-id"><i class="fa-solid fa-flask"></i> Case {{ tc.id }}</span>
+                            <span class="tc-badge {{ 'pass' if tc.passed else 'fail' }}">
+                                {{ 'Pass' if tc.passed else 'Fail' }}
+                            </span>
+                        </div>
+                        <div class="tc-io-box">
+                            <div class="tc-col">
+                                <span class="tc-label">Input</span>
+                                <span class="tc-val">{{ tc.input or '(Empty)' }}</span>
+                            </div>
+                            <div class="tc-col">
+                                <span class="tc-label">Expected Output</span>
+                                <span class="tc-val">{{ tc.expected }}</span>
+                            </div>
+                            <div class="tc-col">
+                                <span class="tc-label">Actual Output</span>
+                                <span class="tc-val" style="color: {{ '#86efac' if tc.passed else '#fca5a5' }}">{{ tc.actual or tc.error or '(No output)' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- AI Review feedback box -->
+                <h4 style="font-size: 13px; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; font-weight: 700;">AI Analysis:</h4>
+                <div class="feedback-grid">
+                    <div class="feedback-item">
+                        <span class="feedback-label" style="color: #34d399;"><i class="fa-solid fa-square-check"></i> Logic Correctness</span>
+                        <div class="feedback-val">{{ r.correct_approach }}</div>
+                    </div>
+                    <div class="feedback-item">
+                        <span class="feedback-label" style="color: #f87171;"><i class="fa-solid fa-triangle-exclamation"></i> Bottlenecks / Bugs</span>
+                        <div class="feedback-val">{{ r.issues }}</div>
+                    </div>
+                    <div class="feedback-item" style="grid-column: span 2;">
+                        <span class="feedback-label" style="color: #60a5fa;"><i class="fa-solid fa-lightbulb"></i> Optimal Approach & Suggestions</span>
+                        <div class="feedback-val">{{ r.better_approach }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        <div class="ai-feedback-grid" style="margin-top:12px;">
-            <div class="feedback-box score-box">
-                <span class="fb-label">Score</span>
-                <span class="fb-value">{{ r.score }}/10</span>
-            </div>
-            <div class="feedback-box strength-box">
-                <span class="fb-label">✅ Correct Approach</span>
-                <span class="fb-value">{{ r.correct_approach }}</span>
-            </div>
-            <div class="feedback-box weakness-box">
-                <span class="fb-label">❌ Issues Found</span>
-                <span class="fb-value">{{ r.issues }}</span>
-            </div>
-            <div class="feedback-box tip-box">
-                <span class="fb-label">💡 Better Approach</span>
-                <span class="fb-value">{{ r.better_approach }}</span>
-            </div>
-        </div>
     </div>
-    {% endfor %}
-
-</div>
-</div>
-</div>
 </div>
 {% endblock %}

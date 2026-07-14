@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect
+from flask import Blueprint, render_template, request, session, redirect, jsonify
 from models.database import get_connection
 from models.levels import get_user_play_level, maybe_unlock_intermediate
 from groq import Groq
@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import json
 import os
 import re
+import subprocess
+import sys
 
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -182,7 +184,80 @@ def submit_aptitude():
         total      = total,
         percentage = percentage,
         results    = results
-    )
+    )# ----------------------------------------
+# CODE EXECUTION HELPERS
+# ----------------------------------------
+def _run_code_internal(code, language, stdin_data):
+    if language == 'python':
+        try:
+            res = subprocess.run(
+                [sys.executable, "-c", code],
+                input=stdin_data,
+                capture_output=True,
+                text=True,
+                timeout=4
+            )
+            return {
+                "status": "success" if res.returncode == 0 else "error",
+                "stdout": res.stdout,
+                "stderr": res.stderr
+            }
+        except subprocess.TimeoutExpired:
+            return {"status": "error", "stdout": "", "stderr": "Time Limit Exceeded (4s)"}
+        except Exception as e:
+            return {"status": "error", "stdout": "", "stderr": str(e)}
+    else:
+        # Simulate compilation and output via Groq AI
+        prompt = f"""
+You are a sandboxed compiler and code execution engine.
+Compile and run the following code with the provided standard input (stdin) and capture the stdout/stderr.
+
+Language: {language}
+Input (stdin):
+{stdin_data}
+
+Code:
+{code}
+
+Respond in this exact JSON format only (no markdown, no extra text):
+{{
+    "status": "success" or "error",
+    "stdout": "output printed to standard output",
+    "stderr": "syntax errors, compilation errors, or runtime exceptions if any"
+}}
+"""
+        try:
+            chat = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"}
+            )
+            res = json.loads(chat.choices[0].message.content)
+            return {
+                "status": res.get("status", "success"),
+                "stdout": res.get("stdout", ""),
+                "stderr": res.get("stderr", "")
+            }
+        except Exception as e:
+            return {"status": "error", "stdout": "", "stderr": f"Execution/Simulation failed: {str(e)}"}
+
+
+# ----------------------------------------
+# RUN CODE API ENDPOINT
+# ----------------------------------------
+@test.route('/api/run-code', methods=['POST'])
+def api_run_code():
+    if 'user_id' not in session:
+        return jsonify({"status": "error", "stderr": "Session expired. Please log in again."}), 401
+    
+    data = request.json or {}
+    code = data.get("code", "")
+    language = data.get("language", "python").lower()
+    stdin_data = data.get("stdin", "")
+    
+    result = _run_code_internal(code, language, stdin_data)
+    return jsonify(result)
+
 
 # ----------------------------------------
 # CODING TEST PAGE
@@ -207,27 +282,33 @@ def coding():
     if questions:
         return render_template('coding.html', questions=questions, level=level)
 
-    # AI coding questions generate
+    # AI coding questions generate with placement-level DSA constraints
     prompt = f"""
-You are an expert coding interviewer.
+You are an expert DSA coding interviewer.
 
-Generate exactly 5 {level_key} level coding problems for a fresher applying for {role} role.
+Generate exactly 3 placement-level Data Structures & Algorithms (DSA) problems for a candidate applying for {role} role at {level_key} level.
 
 Rules:
-- Problems must match {level_key} difficulty
-- Each problem must have a clear example input and output
-- Include a helpful hint
-- Problems must be relevant to {role} role
+- Problems must match {level_key} level (Beginner: Array/String basics; Intermediate: Sorting, Two Pointers, Stacks, HashMaps; Advanced: DP, Trees, Graphs, Greedy).
+- Problems must expect code to read input from standard input (stdin) and print output to standard output (stdout).
+- Include clear HackerRank-style problem description, example input, example output, and helpful hint.
+- Include exactly 3 hidden test cases per problem.
+- DO NOT INCLUDE ANY MARKDOWN formatting (like ```json), JUST THE RAW JSON ARRAY.
 
-Respond in this EXACT JSON format only (no extra text):
+Respond in this EXACT JSON format only:
 [
     {{
         "id": 1,
-        "question": "problem description here with example",
-        "example_input": "input here",
-        "example_output": "output here",
+        "question": "problem description here",
+        "example_input": "1 2",
+        "example_output": "3",
         "topic": "topic name",
-        "hint": "helpful hint here"
+        "hint": "helpful hint",
+        "test_cases": [
+            {{"input": "1 2", "expected_output": "3"}},
+            {{"input": "-5 10", "expected_output": "5"}},
+            {{"input": "0 0", "expected_output": "0"}}
+        ]
     }}
 ]
 """
@@ -253,6 +334,7 @@ Respond in this EXACT JSON format only (no extra text):
     session['coding_level']       = level_key
     return render_template('coding.html', questions=questions, level=level)
 
+
 # ----------------------------------------
 # SUBMIT CODING
 # ----------------------------------------
@@ -268,74 +350,99 @@ def submit_coding():
         questions = _load_fallback_questions('coding', level_key)
 
     results     = []
-    total_score = 0
+    correct     = 0
 
     for q in questions:
-        code     = request.form.get(f"code_{q['id']}", "No code written")
-        language = request.form.get(f"lang_{q['id']}", "python")
+        code     = request.form.get(f"code_{q['id']}", "No code written").strip()
+        language = request.form.get(f"lang_{q['id']}", "python").lower()
 
-        prompt = f"""
+        # Run hidden test cases
+        test_cases = q.get('test_cases', [])
+        if not test_cases:
+            test_cases = [{"input": q['example_input'], "expected_output": q['example_output']}]
+
+        passed_cases = 0
+        total_cases = len(test_cases)
+        tc_results = []
+
+        for idx, tc in enumerate(test_cases):
+            tc_input = tc.get('input', '')
+            tc_expected = tc.get('expected_output', '').strip()
+
+            run_res = _run_code_internal(code, language, tc_input)
+            tc_output = run_res.get('stdout', '').strip()
+            tc_error = run_res.get('stderr', '').strip()
+
+            is_passed = (tc_output == tc_expected)
+            if is_passed:
+                passed_cases += 1
+
+            tc_results.append({
+                "id": idx + 1,
+                "input": tc_input,
+                "expected": tc_expected,
+                "actual": tc_output,
+                "error": tc_error,
+                "passed": is_passed
+            })
+
+        # Score is based on test case correctness (scale 1 to 10)
+        score = round((passed_cases / total_cases) * 10) if total_cases > 0 else 0
+        if score >= 6:
+            correct += 1
+
+        # Use AI to provide feedback on correctness and optimal approach
+        feedback_prompt = f"""
 You are an expert coding interviewer evaluating a fresher candidate.
 
 Problem: {q['question']}
-Expected Output for input {q['example_input']}: {q['example_output']}
 Candidate's Code ({language}):
 {code}
 
+Test Case Results: Passed {passed_cases} out of {total_cases} test cases.
+
 Evaluate the code and respond in this EXACT format only:
-Score: [number from 1 to 10]
-Correct_Approach: [is the logic correct? explain briefly]
-Issues: [any bugs, errors, or missing edge cases]
+Correct_Approach: [Is the logic correct? explain briefly]
+Issues: [Mention bugs, inefficiencies, or missing edge cases]
 Better_Approach: [suggest a better or optimal solution briefly]
 """
-
-        try:
-            chat = client.chat.completions.create(
-                model    = "llama-3.3-70b-versatile",
-                messages = [{"role": "user", "content": prompt}]
-            )
-            feedback_text = chat.choices[0].message.content
-
-        except Exception as e:
-            print("CODING API ERROR:", str(e))
-            feedback_text = ""
-
-        score            = 5
         correct_approach = "N/A"
         issues           = "N/A"
         better_approach  = "N/A"
 
-        if feedback_text:
+        try:
+            chat = client.chat.completions.create(
+                model    = "llama-3.3-70b-versatile",
+                messages = [{"role": "user", "content": feedback_prompt}]
+            )
+            feedback_text = chat.choices[0].message.content
+            
             for line in feedback_text.strip().split('\n'):
                 line = line.strip()
-                if line.lower().startswith("score:"):
-                    try:
-                        numbers = re.findall(r'\d+', line)
-                        if numbers:
-                            score = min(int(numbers[0]), 10)
-                    except:
-                        score = 5
-                elif line.lower().startswith("correct_approach:"):
+                if line.lower().startswith("correct_approach:"):
                     correct_approach = line.split(":", 1)[1].strip()
                 elif line.lower().startswith("issues:"):
                     issues = line.split(":", 1)[1].strip()
                 elif line.lower().startswith("better_approach:"):
                     better_approach = line.split(":", 1)[1].strip()
 
-        total_score += score
+        except Exception as e:
+            print("CODING API ERROR:", str(e))
 
         results.append({
             'question'        : q['question'],
             'code'            : code,
             'language'        : language,
             'score'           : score,
+            'passed_cases'    : passed_cases,
+            'total_cases'     : total_cases,
+            'tc_results'      : tc_results,
             'correct_approach': correct_approach,
             'issues'          : issues,
             'better_approach' : better_approach
         })
 
-    correct    = sum(1 for r in results if r['score'] >= 6)
-    percentage = round((correct / len(questions)) * 100)
+    percentage = round((correct / len(questions)) * 100) if questions else 0
 
     conn   = get_connection()
     cursor = conn.cursor()

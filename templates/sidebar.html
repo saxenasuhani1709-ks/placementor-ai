@@ -1,13 +1,13 @@
 <aside class="sidebar" id="appSidebar">
     <div class="sidebar-logo">
-        <h2 class="sidebar-brand"><span id="sidebarToggle" class="sidebar-icon" title="Toggle Sidebar">🎯</span> <span class="brand-text">PlacementPrep</span></h2>
+        <h2 class="sidebar-brand"><span id="sidebarToggle" class="sidebar-icon" title="Toggle Sidebar">🎯</span> <span class="brand-text">PlaceMentor AI</span></h2>
         <p class="sidebar-tagline">AI Placement System</p>
     </div>
 
     <div class="sidebar-user">
         <div class="user-avatar">{{ session['username'][0] }}</div>
         <div class="user-info">
-            <p>{{ session['username'] }}</p>
+            <p style="text-transform: capitalize;">{{ session['username'] }}</p>
             <span>{{ target_role if target_role else 'Placement Prep' }}</span>
         </div>
     </div>

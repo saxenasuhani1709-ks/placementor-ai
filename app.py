@@ -37,7 +37,7 @@ def inject_sidebar_context():
 
 @app.route('/')
 def home():
-    return redirect('/login')
+    return render_template('index.html')
 
 @app.route('/dashboard')
 def dashboard():
@@ -94,6 +94,17 @@ def instructions_aptitude():
             "Answer cannot be changed once submitted.",
             "Score 60% or above to unlock Intermediate level.",
             "Use of back button is not allowed.",
+        ],
+        tips = [
+            "Read each question carefully before answering — speed matters but accuracy matters more.",
+            "Eliminate obviously wrong options first to improve your chances.",
+            "Practice mental math — avoid depending on calculators.",
+            "If stuck, skip and come back — don't waste time on one question.",
+            "Focus on topics like Percentages, Ratios, Time & Work, and Number Series.",
+        ],
+        skills_evaluated = [
+            "Logical Reasoning", "Quantitative Aptitude", "Data Interpretation",
+            "Problem Solving", "Time Management", "Pattern Recognition"
         ]
     )
 
@@ -130,6 +141,17 @@ def instructions_interview():
             "You can answer by speaking using your microphone or by manual typing as a fallback.",
             "AI evaluates communication, confidence, professionalism, relevance, and role understanding.",
             "Answers cannot be edited after submission."
+        ],
+        tips = [
+            "Use the STAR method — Situation, Task, Action, Result — for behavioral questions.",
+            "Be honest and authentic. Interviewers can sense rehearsed generic answers.",
+            "Prepare your 'Tell me about yourself' answer — it's almost always asked first.",
+            "Research the role you're targeting. Align your answers to the job requirements.",
+            "Maintain a positive tone even when discussing failures or weaknesses.",
+        ],
+        skills_evaluated = [
+            "Communication", "Confidence", "Professionalism",
+            "Relevance", "Role Understanding"
         ]
     )
 
@@ -153,6 +175,17 @@ def instructions_gd():
             "AI will evaluate your clarity, structure and content.",
             "Express your views clearly and confidently.",
             "Answer cannot be edited once submitted.",
+        ],
+        tips = [
+            "Start with a strong opening statement that grabs attention.",
+            "Structure your argument: Introduction → Key Points → Conclusion.",
+            "Use real-world examples and data to support your viewpoint.",
+            "Stay balanced — acknowledge opposing views before countering them.",
+            "Conclude with a clear summary. Don't leave your argument hanging.",
+        ],
+        skills_evaluated = [
+            "Clarity of Thought", "Communication", "Argumentation",
+            "Structure", "Vocabulary", "Critical Thinking"
         ]
     )
 
@@ -173,10 +206,21 @@ def instructions_coding():
         rules     = [
             "Total 5 coding problems will be given.",
             "You will get 10 minutes for each problem.",
-            "Select your preferred language: Python, Java or C++.",
+            "Select your preferred language: Python, Java, C++, C, JavaScript or SQL.",
             "Write complete working code in the editor.",
             "AI will review your code and give detailed feedback.",
             "Code cannot be changed once submitted.",
+        ],
+        tips = [
+            "Read the problem statement twice — understand constraints and edge cases.",
+            "Start with a brute-force approach, then optimize for time & space complexity.",
+            "Write clean, readable code with meaningful variable names.",
+            "Test your code with the sample input before submitting.",
+            "Handle edge cases: empty input, single element, large numbers, negative values.",
+        ],
+        skills_evaluated = [
+            "DSA Knowledge", "Problem Solving", "Code Quality",
+            "Edge Case Handling", "Time Complexity", "Debugging"
         ]
     )
 

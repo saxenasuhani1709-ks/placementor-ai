@@ -1,9 +1,497 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-</head>
-<body>
-    <h1>Welcome to AI Placement System</h1>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="landing-page">
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="lp-navbar">
+        <div class="lp-nav-inner">
+            <div class="lp-logo">
+                <div class="lp-logo-icon">🎯</div>
+                <span class="lp-logo-text">PlaceMentor <span class="lp-logo-accent">AI</span></span>
+            </div>
+            <div class="lp-nav-links">
+                <a href="#hero" class="lp-nav-link active">Home</a>
+                <a href="#features" class="lp-nav-link">Features</a>
+                <a href="#about" class="lp-nav-link">About</a>
+            </div>
+            <div class="lp-nav-actions">
+                <button class="lp-btn-login" onclick="openAuthModal('login')">Sign In</button>
+                <button class="lp-btn-signup" onclick="openAuthModal('register')">Sign Up</button>
+            </div>
+            <!-- Mobile hamburger -->
+            <button class="lp-hamburger" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div class="lp-mobile-menu" id="mobileMenu">
+            <a href="#hero" class="lp-nav-link">Home</a>
+            <a href="#features" class="lp-nav-link">Features</a>
+            <a href="#about" class="lp-nav-link">About</a>
+            <button class="lp-btn-login" onclick="openAuthModal('login')">Sign In</button>
+            <button class="lp-btn-signup" onclick="openAuthModal('register')">Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="lp-hero" id="hero">
+        <div class="lp-hero-glow-1"></div>
+        <div class="lp-hero-glow-2"></div>
+        <div class="lp-hero-content">
+            <div class="lp-hero-badge">
+                <span class="lp-badge-dot"></span>
+                AI-Powered Placement Simulator
+            </div>
+            <h1 class="lp-hero-title">
+                Prepare, Practice,<br>and <span class="lp-hero-highlight">Crack Placements.</span>
+            </h1>
+            <p class="lp-hero-subtitle">
+                Real rounds. <strong>Real pressure.</strong> <em>Real feedback.</em>
+            </p>
+            <button class="lp-hero-cta" onclick="openAuthModal('register')">
+                Start Practicing <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <div class="lp-hero-pills">
+                <span class="lp-pill">✓ Real Interview Simulation</span>
+                <span class="lp-pill">✓ AI Based Playbook</span>
+                <span class="lp-pill">✓ Career Roadmap</span>
+                <span class="lp-pill">✓ Progress Tracking</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHY SECTION ===== -->
+    <section class="lp-section" id="features">
+        <span class="lp-section-tag">WHY PLACEMENTOR AI</span>
+        <h2 class="lp-section-title">Everything You Need to Crack Placements</h2>
+        <div class="lp-features-grid">
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">🤖</div>
+                <h4>AI Feedback</h4>
+                <p>Detailed AI evaluation on interview, communication and coding insights</p>
+            </div>
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">🎯</div>
+                <h4>Mock Rounds</h4>
+                <p>Tech, HR & HR practice with real-world scenarios</p>
+            </div>
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">💼</div>
+                <h4>Role-Based Prep</h4>
+                <p>Questions tailored to your specific career goals</p>
+            </div>
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">📊</div>
+                <h4>Progress Tracking</h4>
+                <p>Track improvements and understand your weaknesses</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PLATFORM MODULES ===== -->
+    <section class="lp-section">
+        <span class="lp-section-tag">PLATFORM MODULES</span>
+        <h2 class="lp-section-title">Built for Real Placement Success</h2>
+        <div class="lp-modules-grid">
+            <div class="lp-module-card">
+                <div class="lp-module-icon">🧮</div>
+                <h4>Aptitude Round</h4>
+                <p>Timed MCQ based placement questions</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">🗣️</div>
+                <h4>GD Round</h4>
+                <p>AI evaluated group discussion practice</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">💼</div>
+                <h4>HR Interview</h4>
+                <p>Role-based interview challenge practice</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">💻</div>
+                <h4>Technical Round</h4>
+                <p>Practice advanced technical interview problems</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">🗺️</div>
+                <h4>Career Roadmap</h4>
+                <p>AI generated career based placement roadmap</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">📈</div>
+                <h4>Progress Tracking</h4>
+                <p>View your progress interactive growth</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">⚡</div>
+                <h4>AI Evaluation</h4>
+                <p>Get AI driven feedback and recommendations</p>
+            </div>
+            <div class="lp-module-card">
+                <div class="lp-module-icon">🏆</div>
+                <h4>Profile & Levels</h4>
+                <p>Compete and earn progress and master your profile</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ABOUT SECTION ===== -->
+    <section class="lp-section lp-about-section" id="about">
+        <span class="lp-section-tag">ABOUT</span>
+        <h2 class="lp-section-title">PlaceMentor AI</h2>
+        <div class="lp-about-grid">
+            <div class="lp-about-text">
+                <h3>Built for <span class="lp-hero-highlight">Placement Success</span></h3>
+                <p>PlaceMentor AI is an AI-powered placement preparation platform for students to help solve the problem for real placement rounds through aptitude, communication, interview practice and management tests.</p>
+                <p>The platform focuses on ensuring students do communication, interview, aptitude and management preparation.</p>
+                <h4>Why We Built It</h4>
+                <ul>
+                    <li>Many students struggle in placements due to lack of structured preparation and interview readiness.</li>
+                    <li>PlaceMentor AI helps bridge the gap through mock evaluation, AI based feedback, and a practical evaluation.</li>
+                </ul>
+            </div>
+            <div class="lp-about-stats">
+                <div class="lp-stat-badge">
+                    <span class="lp-stat-number">4+</span>
+                    <span class="lp-stat-label">PRACTICE ROUNDS</span>
+                </div>
+                <div class="lp-stat-badge lp-stat-blue">
+                    <span class="lp-stat-number">AI</span>
+                    <span class="lp-stat-label">SMART AI</span>
+                </div>
+                <div class="lp-stat-badge lp-stat-purple">
+                    <span class="lp-stat-number">Role</span>
+                    <span class="lp-stat-label">BASED PREP</span>
+                </div>
+                <div class="lp-stat-badge lp-stat-green">
+                    <span class="lp-stat-number">Live</span>
+                    <span class="lp-stat-label">PROGRESS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="lp-footer">
+        <p>© 2026 PlaceMentor AI. Built with ❤️ for placement success.</p>
+    </footer>
+
+</div>
+
+<!-- ===== AUTH MODAL OVERLAY ===== -->
+<div class="auth-modal-overlay" id="authModalOverlay" onclick="closeAuthModal(event)">
+    <div class="auth-modal-card" id="authModalCard">
+        <!-- Close Button -->
+        <button class="auth-modal-close" onclick="closeAuthModal(event, true)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Header -->
+        <div class="auth-header">
+            <h1><span>PlaceMentor AI</span></h1>
+            <p id="authSubtitle">Welcome back! Login to continue</p>
+        </div>
+
+        <!-- Smooth Tab Switcher -->
+        <div class="auth-toggle-container">
+            <div class="auth-toggle-slider" id="toggleSlider"></div>
+            <button type="button" class="auth-toggle-btn active" id="btnTabLogin" onclick="switchTab('login')">Sign In</button>
+            <button type="button" class="auth-toggle-btn" id="btnTabRegister" onclick="switchTab('register')">Sign Up</button>
+        </div>
+
+        {% if error %}
+        <div class="error-box">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success-box" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>{{ success }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Forms Wrapper -->
+        <div class="auth-form-wrapper" id="formWrapper">
+
+            <!-- SIGN IN -->
+            <div class="auth-form-pane login-pane" id="paneLogin">
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-with-icon">
+                            <input type="email" name="email" placeholder="name@example.com" required id="loginEmail">
+                            <span class="input-icon"><i class="fa-regular fa-envelope"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-with-icon">
+                            <input type="password" name="password" id="loginPassword" placeholder="••••••••" required>
+                            <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword')">
+                                <i class="fa-regular fa-eye" id="loginPasswordEye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <label class="custom-checkbox-container">
+                            <input type="checkbox" name="remember_me">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="javascript:void(0)" class="forgot-pwd-link" onclick="switchTab('forgot')" style="color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- SIGN UP -->
+            <div class="auth-form-pane register-pane" id="paneRegister">
+                <form action="/register" method="POST" onsubmit="return validateSignup()">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <div class="input-with-icon">
+                            <input type="text" name="username" placeholder="John Doe" required>
+                            <span class="input-icon"><i class="fa-regular fa-user"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-with-icon">
+                            <input type="email" name="email" placeholder="name@example.com" required>
+                            <span class="input-icon"><i class="fa-regular fa-envelope"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Role</label>
+                        <div class="input-with-icon">
+                            <select name="target_role" required>
+                                <option value="" disabled selected>-- Select target role --</option>
+                                <option value="Software Developer">Software Developer</option>
+                                <option value="Data Analyst">Data Analyst</option>
+                                <option value="Web Developer">Web Developer</option>
+                                <option value="DevOps Engineer">DevOps Engineer</option>
+                                <option value="AI/ML Engineer">AI/ML Engineer</option>
+                            </select>
+                            <span class="input-icon"><i class="fa-solid fa-briefcase"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-with-icon">
+                            <input type="password" name="password" id="registerPassword" placeholder="••••••••" required minlength="6">
+                            <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('registerPassword')">
+                                <i class="fa-regular fa-eye" id="registerPasswordEye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <div class="input-with-icon">
+                            <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                            <span class="input-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        Create Account <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- RESET PASSWORD -->
+            <div class="auth-form-pane forgot-pane" id="paneForgot" style="display: none;">
+                <form action="/reset-password" method="POST">
+                    <div class="form-group">
+                        <label>Registered Email</label>
+                        <div class="input-with-icon">
+                            <input type="email" name="email" placeholder="name@example.com" required>
+                            <span class="input-icon"><i class="fa-regular fa-envelope"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <div class="input-with-icon">
+                            <input type="password" name="password" id="resetPassword" placeholder="••••••••" required minlength="6">
+                            <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('resetPassword')">
+                                <i class="fa-regular fa-eye" id="resetPasswordEye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="margin-top: 15px;">
+                        Reset Password <i class="fa-solid fa-key"></i>
+                    </button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="javascript:void(0)" onclick="switchTab('login')" style="color: #64748b; font-size: 13px; text-decoration: none; font-weight: 500;">Back to Sign In</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== AUTH MODAL ===== */
+function openAuthModal(mode) {
+    const overlay = document.getElementById('authModalOverlay');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    switchTab(mode || 'login');
+    setTimeout(adjustWrapperHeight, 50);
+}
+
+function closeAuthModal(event, force) {
+    if (force || event.target.id === 'authModalOverlay') {
+        document.getElementById('authModalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+/* ===== TAB SWITCHING ===== */
+function switchTab(mode) {
+    const card = document.getElementById('authModalCard');
+    const btnLogin = document.getElementById('btnTabLogin');
+    const btnRegister = document.getElementById('btnTabRegister');
+    const subtitle = document.getElementById('authSubtitle');
+    const toggleContainer = document.querySelector('.auth-toggle-container');
+    const paneLogin = document.getElementById('paneLogin');
+    const paneRegister = document.getElementById('paneRegister');
+    const paneForgot = document.getElementById('paneForgot');
+
+    if (mode === 'register') {
+        card.classList.add('signup-mode');
+        card.classList.remove('forgot-mode');
+        btnLogin.classList.remove('active');
+        btnRegister.classList.add('active');
+        if (toggleContainer) toggleContainer.style.display = 'flex';
+        subtitle.innerText = 'Create your PlaceMentor AI account';
+        if (paneLogin) paneLogin.style.display = 'none';
+        if (paneRegister) paneRegister.style.display = 'block';
+        if (paneForgot) paneForgot.style.display = 'none';
+    } else if (mode === 'forgot') {
+        card.classList.remove('signup-mode');
+        card.classList.add('forgot-mode');
+        btnLogin.classList.remove('active');
+        btnRegister.classList.remove('active');
+        if (toggleContainer) toggleContainer.style.display = 'none';
+        subtitle.innerText = 'Reset your password';
+        if (paneLogin) paneLogin.style.display = 'none';
+        if (paneRegister) paneRegister.style.display = 'none';
+        if (paneForgot) paneForgot.style.display = 'block';
+    } else {
+        card.classList.remove('signup-mode');
+        card.classList.remove('forgot-mode');
+        btnLogin.classList.add('active');
+        btnRegister.classList.remove('active');
+        if (toggleContainer) toggleContainer.style.display = 'flex';
+        subtitle.innerText = 'Welcome back! Login to continue';
+        if (paneLogin) paneLogin.style.display = 'block';
+        if (paneRegister) paneRegister.style.display = 'none';
+        if (paneForgot) paneForgot.style.display = 'none';
+    }
+    setTimeout(adjustWrapperHeight, 50);
+}
+
+/* ===== PASSWORD TOGGLE ===== */
+function togglePasswordVisibility(fieldId) {
+    const input = document.getElementById(fieldId);
+    const eye = document.getElementById(fieldId + 'Eye');
+    if (input.type === 'password') {
+        input.type = 'text';
+        eye.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        eye.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+/* ===== HEIGHT ADJUST ===== */
+function adjustWrapperHeight() {
+    const wrapper = document.getElementById('formWrapper');
+    const card = document.getElementById('authModalCard');
+    let activePaneId = 'paneLogin';
+    if (card.classList.contains('signup-mode')) {
+        activePaneId = 'paneRegister';
+    } else if (card.classList.contains('forgot-mode')) {
+        activePaneId = 'paneForgot';
+    }
+    const pane = document.getElementById(activePaneId);
+    if (wrapper && pane) wrapper.style.height = pane.scrollHeight + 'px';
+}
+
+/* ===== SIGNUP VALIDATION ===== */
+function validateSignup() {
+    const pw = document.getElementById('registerPassword').value;
+    const cpw = document.getElementById('confirmPassword').value;
+    if (pw !== cpw) {
+        alert('Passwords do not match!');
+        return false;
+    }
+    return true;
+}
+
+/* ===== MOBILE MENU ===== */
+function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+/* ===== NAVBAR SCROLL ===== */
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('.lp-navbar');
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ===== AUTO-OPEN MODAL ===== */
+window.addEventListener('load', () => {
+    {% if show_modal %}
+        openAuthModal('{{ show_modal }}');
+    {% else %}
+        if (window.location.pathname === '/register') {
+            openAuthModal('register');
+        } else if (window.location.pathname === '/login') {
+            openAuthModal('login');
+        }
+    {% endif %}
+    
+    {% if error %}
+        const path = window.location.pathname;
+        if (path === '/register') {
+            openAuthModal('register');
+        } else {
+            openAuthModal('login');
+        }
+    {% endif %}
+    
+    setTimeout(adjustWrapperHeight, 100);
+});
+
+/* ===== SMOOTH SCROLL ===== */
+document.querySelectorAll('.lp-nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+            // Close mobile menu
+            document.getElementById('mobileMenu').classList.remove('open');
+        }
+    });
+});
+</script>
+{% endblock %}

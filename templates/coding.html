@@ -1,132 +1,676 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- CodeMirror CSS & Themes -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- CodeMirror Core JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<!-- CodeMirror Language Modes -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/sql/sql.min.js"></script>
+
+<style>
+    /* ===== FULL-SCREEN SPLIT WORKSPACE ===== */
+    .coding-workspace {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 70px);
+        background: #0f111a;
+        color: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .workspace-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+        background: #161b26;
+        border-bottom: 1px solid #232d3f;
+    }
+
+    .question-tabs {
+        display: flex;
+        gap: 6px;
+    }
+
+    .tab-btn {
+        padding: 6px 14px;
+        background: #1f293d;
+        color: #94a3b8;
+        border: 1px solid #2e3c54;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+        background: #3b82f6;
+        color: #ffffff;
+        border-color: #3b82f6;
+    }
+
+    .timer-badge {
+        background: #1e293b;
+        border: 1px solid #fc8181;
+        color: #fc8181;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .workspace-body {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    /* Left Pane: Problem Description */
+    .problem-pane {
+        width: 45%;
+        padding: 24px;
+        overflow-y: auto;
+        border-right: 1px solid #232d3f;
+        background: #121620;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .pane-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .problem-meta {
+        display: flex;
+        gap: 8px;
+    }
+
+    .meta-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-dsa { background: #3b82f6; color: #ffffff; }
+    .badge-level { background: #10b981; color: #ffffff; }
+
+    .problem-description {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #cbd5e1;
+    }
+
+    .problem-description pre {
+        background: #1e293b;
+        padding: 10px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-family: 'Fira Code', monospace;
+        font-size: 13px;
+        color: #e2e8f0;
+    }
+
+    .io-example-card {
+        background: #161b26;
+        border: 1px solid #232d3f;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .io-header {
+        font-size: 13px;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+    }
+
+    .io-box {
+        font-family: monospace;
+        background: #0f111a;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #60a5fa;
+        overflow-x: auto;
+        white-space: pre-wrap;
+    }
+
+    .accordion-btn {
+        background: #1e293b;
+        border: 1px solid #2d3748;
+        padding: 10px 14px;
+        width: 100%;
+        text-align: left;
+        border-radius: 8px;
+        color: #cbd5e1;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .accordion-content {
+        padding: 10px 14px;
+        background: #0f111a;
+        border: 1px solid #1e293b;
+        border-radius: 8px;
+        margin-top: 6px;
+        font-size: 13.5px;
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    .custom-input-box {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .custom-input-box textarea {
+        background: #0f111a;
+        border: 1px solid #2d3748;
+        border-radius: 6px;
+        padding: 10px;
+        color: #e2e8f0;
+        font-family: monospace;
+        font-size: 13px;
+        resize: vertical;
+        outline: none;
+    }
+
+    /* Right Pane: Code Editor + Console */
+    .editor-pane {
+        width: 55%;
+        display: flex;
+        flex-direction: column;
+        background: #181d28;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .editor-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 18px;
+        background: #1e2535;
+        border-bottom: 1px solid #2d384e;
+    }
+
+    .editor-controls select {
+        padding: 6px 12px;
+        background: #0f111a;
+        border: 1px solid #2d384e;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+    }
+
+    /* CodeMirror Override to fill pane */
+    .CodeMirror {
+        flex: 1;
+        height: auto;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        font-size: 14px;
+    }
+
+    /* Action Buttons Footer */
+    .editor-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        background: #161b26;
+        border-top: 1px solid #232d3f;
+    }
+
+    .btn-run {
+        background: transparent;
+        color: #3b82f6;
+        border: 1px solid #3b82f6;
+        padding: 8px 18px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13.5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-run:hover {
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-submit-test {
+        background: #10b981;
+        color: #ffffff;
+        border: none;
+        padding: 8px 22px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13.5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-submit-test:hover {
+        background: #059669;
+        transform: translateY(-1px);
+    }
+
+    /* Collapsible Console styles */
+    .console-panel {
+        background: #0b0e14;
+        border-top: 2px solid #3b82f6;
+        display: none;
+        flex-direction: column;
+        max-height: 250px;
+        min-height: 120px;
+        transition: all 0.3s;
+    }
+
+    .console-panel.active {
+        display: flex;
+    }
+
+    .console-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 16px;
+        background: #121720;
+        border-bottom: 1px solid #1a2230;
+    }
+
+    .console-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #cbd5e1;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .console-close-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .console-content {
+        padding: 12px 16px;
+        overflow-y: auto;
+        font-family: 'Fira Code', monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    .stdout-text { color: #86efac; }
+    .stderr-text { color: #fca5a5; }
+    .info-text { color: #94a3b8; }
+</style>
+
 <div class="app-layout">
 
-{% include 'sidebar.html' with context %}
+    {% include 'sidebar.html' with context %}
 
-<div class="main-content">
-<div class="topbar">
-    <div style="display:flex; align-items:center; gap:14px;">
-        <button class="menu-btn" onclick="openSidebar()">☰</button>
-        <h3>💻 Technical Round</h3>
-    </div>
-    <a href="/dashboard" style="color:#4a5568; font-size:13px; text-decoration:none;">← Dashboard</a>
-</div>
-<div class="page-content">
-<div class="coding-container">
-
-    <div class="test-header">
-        <h2>💻 Technical Round</h2>
-        <p>Solve the following technical questions &nbsp;|&nbsp; {{ level }} Level &nbsp;|&nbsp; 10 minutes per problem</p>
-    </div>
-
-    <div class="timer-bar">
-        <span>⏱️ Time Left:</span>
-        <span id="timer" class="timer-count">600</span>
-        <span>seconds</span>
-    </div>
-
-    <form action="/submit-coding" method="POST" id="codingForm">
-
-        {% for q in questions %}
-        <div class="coding-card" id="q-{{ loop.index }}"
-             style="display: {{ 'block' if loop.index == 1 else 'none' }}">
-
-            <div class="question-meta">
-                <span class="q-number">Problem {{ loop.index }}/{{ questions|length }}</span>
-                <span class="q-topic">💻 {{ q.topic }}</span>
+    <div class="main-content">
+        <div class="topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="menu-btn" onclick="openSidebar()">☰</button>
+                <h3>💻 Technical Assessment Round</h3>
             </div>
+            <a href="/dashboard" style="color:#94a3b8; font-size:13px; text-decoration:none;">← Exit Exam</a>
+        </div>
 
-            <h3 class="question-text">{{ q.question }}</h3>
-
-            <div class="example-box">
-                <div class="example-row">
-                    <span class="example-label">Input:</span>
-                    <code>{{ q.example_input }}</code>
+        <div class="coding-workspace">
+            <!-- Header bar with question selection and timer -->
+            <div class="workspace-header">
+                <div class="question-tabs">
+                    {% for q in questions %}
+                    <button class="tab-btn {% if loop.index == 1 %}active{% endif %}" id="tab-btn-{{ q.id }}" onclick="switchQuestion({{ q.id }})">
+                        Problem {{ loop.index }}
+                    </button>
+                    {% endfor %}
                 </div>
-                <div class="example-row">
-                    <span class="example-label">Output:</span>
-                    <code>{{ q.example_output }}</code>
-                </div>
-                <div class="example-row">
-                    <span class="example-label">💡 Hint:</span>
-                    <span class="hint-text">{{ q.hint }}</span>
+                <div class="timer-badge">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    <span id="timer">600</span>s remaining
                 </div>
             </div>
 
-            <div class="lang-select-group">
-                <label>Select Language:</label>
-                <select name="lang_{{ q.id }}" class="lang-select">
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                    <option value="cpp">C++</option>
-                </select>
+            <!-- Main Work split panes -->
+            <div class="workspace-body">
+                
+                <!-- Left Pane: Problem Description -->
+                <div class="problem-pane">
+                    {% for q in questions %}
+                    <div class="problem-details-wrapper" id="prob-desc-{{ q.id }}" style="display: {{ 'block' if loop.index == 1 else 'none' }};">
+                        <div class="problem-meta" style="margin-bottom: 12px;">
+                            <span class="meta-badge badge-dsa"><i class="fa-solid fa-code"></i> {{ q.topic }}</span>
+                            <span class="meta-badge badge-level"><i class="fa-solid fa-chart-line"></i> {{ level }}</span>
+                        </div>
+                        <h2 class="pane-title" style="margin-bottom: 16px;">{{ q.question.split('\n')[0] }}</h2>
+                        
+                        <div class="problem-description">
+                            {{ q.question | replace('\n', '<br>') | safe }}
+                        </div>
+
+                        <div class="io-example-card" style="margin-top: 20px;">
+                            <div class="io-header">Sample Input</div>
+                            <div class="io-box">{{ q.example_input }}</div>
+                            
+                            <div class="io-header" style="margin-top: 14px;">Sample Output</div>
+                            <div class="io-box">{{ q.example_output }}</div>
+                        </div>
+
+                        <!-- Hints accordion -->
+                        <div style="margin-top: 20px;">
+                            <button type="button" class="accordion-btn" onclick="toggleAccordion('hint-{{ q.id }}')">
+                                <span>💡 Need a hint?</span>
+                                <i class="fa-solid fa-chevron-down" id="chevron-hint-{{ q.id }}"></i>
+                            </button>
+                            <div class="accordion-content" id="hint-{{ q.id }}" style="display: none;">
+                                {{ q.hint }}
+                            </div>
+                        </div>
+
+                        <!-- Custom Test Input console -->
+                        <div class="custom-input-box" style="margin-top: 20px;">
+                            <label style="font-size: 13px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Provide Custom Test Input (stdin):</label>
+                            <textarea id="custom-input-{{ q.id }}" rows="3" placeholder="Enter standard input values here..."></textarea>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Right Pane: Code Editor + Dynamic Output console -->
+                <div class="editor-pane">
+                    <div class="editor-controls">
+                        <div>
+                            <select id="lang-selector" onchange="changeLanguage()">
+                                <option value="python">Python 3</option>
+                                <option value="java">Java (JDK 15)</option>
+                                <option value="cpp">C++ (GCC 10)</option>
+                                <option value="c">C (GCC 10)</option>
+                                <option value="javascript">JavaScript (Node.js)</option>
+                                <option value="sql">SQL Query</option>
+                            </select>
+                        </div>
+                        <div style="font-size: 12px; color: #94a3b8;"><i class="fa-solid fa-keyboard"></i> Code Editor</div>
+                    </div>
+
+                    <!-- Hidden input fields to sync code for submission -->
+                    <form action="/submit-coding" method="POST" id="submitForm" style="display: none;">
+                        {% for q in questions %}
+                        <textarea name="code_{{ q.id }}" id="code-submit-{{ q.id }}"></textarea>
+                        <input type="hidden" name="lang_{{ q.id }}" id="lang-submit-{{ q.id }}" value="python">
+                        {% endfor %}
+                    </form>
+
+                    <!-- Real active Editor area -->
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <textarea id="active-editor-textarea"></textarea>
+                    </div>
+
+                    <!-- Dynamic Terminal Console for Output -->
+                    <div class="console-panel" id="consolePanel">
+                        <div class="console-header">
+                            <span class="console-title" id="consoleTitle"><i class="fa-solid fa-terminal"></i> Console Output</span>
+                            <button type="button" class="console-close-btn" onclick="closeConsole()"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="console-content" id="consoleContent">
+                            <span class="info-text">Output details will appear here after clicking "Run Code"...</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions Bottom bar -->
+                    <div class="editor-footer">
+                        <button type="button" class="btn-run" onclick="runActiveCode()">
+                            <i class="fa-solid fa-play"></i> Run Code
+                        </button>
+                        
+                        <button type="button" class="btn-submit-test" id="submitBtn" onclick="submitFinalTest()">
+                            <i class="fa-solid fa-circle-check"></i> Submit Exam
+                        </button>
+                    </div>
+                </div>
+
             </div>
-
-            <textarea
-                name="code_{{ q.id }}"
-                class="code-editor"
-                placeholder="Write your code here..."
-                rows="12"
-                spellcheck="false"
-            ></textarea>
-
         </div>
-        {% endfor %}
-
-        <div class="test-nav">
-            <button type="button" class="btn-nav" onclick="prevQuestion()">← Prev</button>
-            <span id="progress-text">1 / {{ questions|length }}</span>
-            <button type="button" class="btn-nav" onclick="nextQuestion()">Next →</button>
-        </div>
-
-        <div style="text-align:center; margin-top:20px;">
-            <button type="submit" class="btn-submit" id="submitBtn" style="display:none;">
-                Submit Technical Round ✅
-            </button>
-        </div>
-
-    </form>
-
-</div>
-</div>
-</div>
+    </div>
 </div>
 
 <script>
-    let current  = 1;
-    const total  = {{ questions|length }};
-    let timeLeft = 600;
+    const questions = {{ questions | tojson | safe }};
+    let activeQuestionId = questions.length > 0 ? questions[0].id : null;
+    let editorInstance = null;
+    let timerVal = 600;
 
-    const timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer').textContent = timeLeft;
-        if (timeLeft <= 60) {
-            document.getElementById('timer').style.color = 'red';
-        }
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            document.getElementById('codingForm').submit();
-        }
-    }, 1000);
+    // Cache to hold code entered per question & language selection
+    // Pre-populating default template boilerplates
+    const boilerplates = {
+        python: `# Write your Python code here\nimport sys\n\ndef solve():\n    # Read input from standard input\n    # Example:\n    # lines = sys.stdin.read().split()\n    pass\n\nif __name__ == '__main__':\n    solve()`,
+        java: `// Write your Java code here\nimport java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Read input from Scanner\n    }\n}`,
+        cpp: `// Write your C++ code here\n#include <iostream>\nusing namespace std;\n\nint main() {\n    // Read input from cin\n    return 0;\n}`,
+        c: `// Write your C code here\n#include <stdio.h>\n\nint main() {\n    // Read input from stdin\n    return 0;\n}`,
+        javascript: `// Write your JavaScript code here\nconst fs = require('fs');\n\nfunction solve() {\n    // Read input from /dev/stdin\n    // const input = fs.readFileSync(0, 'utf-8');\n}\n\nsolve();`,
+        sql: `-- Write your SQL query here\nSELECT * FROM employees;`
+    };
 
-    function showQuestion(n) {
-        for (let i = 1; i <= total; i++) {
-            document.getElementById('q-' + i).style.display = 'none';
+    const codeCache = {};
+    const languageCache = {};
+
+    // Initialise caches
+    questions.forEach(q => {
+        codeCache[q.id] = {
+            python: boilerplates.python,
+            java: boilerplates.java,
+            cpp: boilerplates.cpp,
+            c: boilerplates.c,
+            javascript: boilerplates.javascript,
+            sql: boilerplates.sql
+        };
+        languageCache[q.id] = 'python';
+    });
+
+    window.onload = function() {
+        // Initialize CodeMirror instance
+        editorInstance = CodeMirror.fromTextArea(document.getElementById('active-editor-textarea'), {
+            lineNumbers: true,
+            theme: 'dracula',
+            mode: 'text/x-python',
+            indentUnit: 4,
+            smartIndent: true,
+            tabSize: 4,
+            lineWrapping: true,
+            matchBrackets: true,
+            autoCloseBrackets: true
+        });
+
+        // Set initial code
+        if(activeQuestionId) {
+            editorInstance.setValue(codeCache[activeQuestionId]['python']);
         }
-        document.getElementById('q-' + n).style.display = 'block';
-        document.getElementById('progress-text').textContent = n + ' / ' + total;
-        document.getElementById('submitBtn').style.display = n === total ? 'block' : 'none';
+
+        // Start timer
+        const timerInterval = setInterval(() => {
+            timerVal--;
+            document.getElementById('timer').textContent = timerVal;
+            if (timerVal <= 60) {
+                document.getElementById('timer').style.color = '#ef4444';
+            }
+            if (timerVal <= 0) {
+                clearInterval(timerInterval);
+                submitFinalTest(true);
+            }
+        }, 1000);
+    };
+
+    function switchQuestion(qid) {
+        // Save current code to cache
+        const currentLang = languageCache[activeQuestionId];
+        codeCache[activeQuestionId][currentLang] = editorInstance.getValue();
+
+        // Update tabs active state
+        questions.forEach(q => {
+            const btn = document.getElementById('tab-btn-' + q.id);
+            if(btn) btn.classList.remove('active');
+            
+            const desc = document.getElementById('prob-desc-' + q.id);
+            if(desc) desc.style.display = 'none';
+        });
+
+        document.getElementById('tab-btn-' + qid).classList.add('active');
+        document.getElementById('prob-desc-' + qid).style.display = 'block';
+
+        // Load new question data
+        activeQuestionId = qid;
+        const newLang = languageCache[qid];
+        document.getElementById('lang-selector').value = newLang;
+        editorInstance.setValue(codeCache[qid][newLang]);
+        setEditorMode(newLang);
+        closeConsole();
     }
 
-    function nextQuestion() {
-        if (current < total) { current++; showQuestion(current); }
+    function changeLanguage() {
+        const selectedLang = document.getElementById('lang-selector').value;
+        const previousLang = languageCache[activeQuestionId];
+        
+        // Save previous language code
+        codeCache[activeQuestionId][previousLang] = editorInstance.getValue();
+        
+        // Load code template for selected language
+        languageCache[activeQuestionId] = selectedLang;
+        editorInstance.setValue(codeCache[activeQuestionId][selectedLang]);
+        setEditorMode(selectedLang);
     }
 
-    function prevQuestion() {
-        if (current > 1) { current--; showQuestion(current); }
+    function setEditorMode(lang) {
+        let mode = 'text/x-python';
+        if (lang === 'java') mode = 'text/x-java';
+        else if (lang === 'cpp') mode = 'text/x-c++src';
+        else if (lang === 'c') mode = 'text/x-csrc';
+        else if (lang === 'javascript') mode = 'text/javascript';
+        else if (lang === 'sql') mode = 'text/x-sql';
+        
+        editorInstance.setOption('mode', mode);
+    }
+
+    function toggleAccordion(id) {
+        const el = document.getElementById(id);
+        const chev = document.getElementById('chevron-' + id);
+        if(el.style.display === 'none') {
+            el.style.display = 'block';
+            chev.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        } else {
+            el.style.display = 'none';
+            chev.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        }
+    }
+
+    function closeConsole() {
+        document.getElementById('consolePanel').classList.remove('active');
+    }
+
+    function runActiveCode() {
+        const consolePanel = document.getElementById('consolePanel');
+        const consoleContent = document.getElementById('consoleContent');
+        const consoleTitle = document.getElementById('consoleTitle');
+        
+        consolePanel.classList.add('active');
+        consoleTitle.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Running Code...';
+        consoleContent.innerHTML = '<span class="info-text">Sending compilation request to server sandbox...</span>';
+
+        const codeVal = editorInstance.getValue();
+        const langVal = languageCache[activeQuestionId];
+        const stdinVal = document.getElementById('custom-input-' + activeQuestionId).value;
+
+        fetch('/api/run-code', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                code: codeVal,
+                language: langVal,
+                stdin: stdinVal
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            consoleTitle.innerHTML = '<i class="fa-solid fa-terminal"></i> Console Output';
+            
+            if (data.status === 'success') {
+                consoleContent.innerHTML = '<div class="stdout-text" style="font-weight:700; margin-bottom:4px;">Execution Success (Stdout):</div>' +
+                                           '<pre class="stdout-text" style="background:#111827; padding:10px; border-radius:4px; overflow-x:auto;">' + (data.stdout || '(No Output printed)') + '</pre>';
+                if(data.stderr) {
+                    consoleContent.innerHTML += '<div class="stderr-text" style="font-weight:700; margin-top:10px; margin-bottom:4px;">Warnings/Error details:</div>' +
+                                                '<pre class="stderr-text" style="background:#111827; padding:10px; border-radius:4px; overflow-x:auto;">' + data.stderr + '</pre>';
+                }
+            } else {
+                consoleContent.innerHTML = '<div class="stderr-text" style="font-weight:700; margin-bottom:4px;">Compilation or Runtime Error:</div>' +
+                                           '<pre class="stderr-text" style="background:#111827; padding:10px; border-radius:4px; overflow-x:auto;">' + (data.stderr || 'Failed execution') + '</pre>';
+            }
+        })
+        .catch(err => {
+            consoleTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#f56565;"></i> Connection Error';
+            consoleContent.innerHTML = '<span class="stderr-text">Failed to connect to execution server endpoint: ' + err + '</span>';
+        });
+    }
+
+    function submitFinalTest(isAutoSubmit = false) {
+        if (!isAutoSubmit) {
+            const conf = confirm("Are you sure you want to finish and submit the Technical coding round?");
+            if (!conf) return;
+        }
+
+        // Save active editor code to cache
+        const currentLang = languageCache[activeQuestionId];
+        codeCache[activeQuestionId][currentLang] = editorInstance.getValue();
+
+        // Populate submission forms
+        questions.forEach(q => {
+            const qLang = languageCache[q.id];
+            const qCode = codeCache[q.id][qLang];
+            
+            document.getElementById('code-submit-' + q.id).value = qCode;
+            document.getElementById('lang-submit-' + q.id).value = qLang;
+        });
+
+        // Submit form
+        document.getElementById('submitForm').submit();
     }
 </script>
-
 {% endblock %}
