@@ -3,3 +3,5 @@ groq==1.2.0
 python-dotenv==1.2.2
 Werkzeug==3.1.8
 requests
+gunicorn==26.0.0
+
